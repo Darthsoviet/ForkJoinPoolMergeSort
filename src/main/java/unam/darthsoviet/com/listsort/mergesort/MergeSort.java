@@ -30,7 +30,7 @@ public class MergeSort implements Sorter {
         if (left<right) {
 
             recursiveSplit(left, middle, array, comparator);
-            recursiveSplit(middle, right, array, comparator);
+            recursiveSplit(middle+1, right, array, comparator);
 
             merge(left, middle,right,array, comparator);
 

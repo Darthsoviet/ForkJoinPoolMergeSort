@@ -7,17 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import unam.darthsoviet.com.listsort.Sorter;
+import unam.darthsoviet.com.util.ArraySaver;
 import unam.darthsoviet.com.util.Timer;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.IntStream;
 
 /**
  * Unit test for simple App.
@@ -26,23 +20,14 @@ import java.util.stream.IntStream;
 
 public class InsertionSortTest {
     static List<Integer> numbers;
+    static List<Integer> numbersExpectedUnordered;
+
     private Timer timer = new Timer();
 
     @BeforeAll
     public static void initTestData() throws IOException, ClassNotFoundException {
-
-        Path path = Paths.get("." + File.separator + "src" + File.separator + "test" +  File.separator + "resources" + File.separator + "data" + File.separator + "hugeArray.ser");
-        if (!Files.exists(path)) {
-            numbers = new LinkedList<>();
-            IntStream.range(0, 2_000_000).forEach(numbers::add);
-            Collections.shuffle(numbers);
-            Files.createFile(path);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(Files.newOutputStream(path));
-            objectOutputStream.writeObject(numbers);
-        } else {
-            ObjectInputStream objectInputStream = new ObjectInputStream(Files.newInputStream(path));
-            numbers = (List) objectInputStream.readObject();
-        }
+        numbers = ArraySaver.getOrCreateArrayFromFile("hugeArray.ser");
+        numbersExpectedUnordered = ArraySaver.getOrCreateArrayFromFile("hugeArray.ser");
     }
 
 
@@ -68,7 +53,6 @@ public class InsertionSortTest {
 
     @Test
     public void bigSort() {
-        List<Integer> expected = new ArrayList<>(numbers);
         Sorter Sorter = new InsertionSort();
 
         timer.start();
@@ -76,10 +60,10 @@ public class InsertionSortTest {
         timer.end();
         timer.start();
 
-        Collections.sort(expected);
+        Collections.sort(numbersExpectedUnordered);
         timer.end();
 
-        Assertions.assertEquals(expected, numbers);
+        Assertions.assertEquals(numbersExpectedUnordered, numbers);
     }
 
 }

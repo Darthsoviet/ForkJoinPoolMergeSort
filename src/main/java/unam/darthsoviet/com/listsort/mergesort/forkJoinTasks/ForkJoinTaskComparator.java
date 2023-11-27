@@ -19,20 +19,14 @@ public class ForkJoinTaskComparator<T> extends RecursiveAction {
     private final int limit;
     private final Comparator<T> comparator;
 
-    private final Sorter secuentialSorter;
+
 
     public ForkJoinTaskComparator(List<T> array, int left, int right, int limit, Comparator<T> comparator) {
-        this(array,left,right,limit,comparator,new MergeSort());
-
-    }
-
-    public ForkJoinTaskComparator(List<T> array, int left, int right, int limit, Comparator<T> comparator, Sorter secuentialSorter) {
         this.array = array;
         this.left = left;
         this.right = right;
         this.limit = limit;
         this.comparator = comparator;
-        this.secuentialSorter = secuentialSorter;
     }
 
 
@@ -40,9 +34,11 @@ public class ForkJoinTaskComparator<T> extends RecursiveAction {
     protected void compute() {
         int middle = (left + right) / 2;
 
-        if (left<right) {
+        int size = right - left;
+        if(size > limit){
             forkJoinMethod(middle);
-            merge(middle);
+        }else if (left<right) {
+            sequentialMethod(middle);
 
         }
 
@@ -50,12 +46,20 @@ public class ForkJoinTaskComparator<T> extends RecursiveAction {
 
 
     private void forkJoinMethod(int middle) {
-        ForkJoinTaskComparator<T> leftTask = new ForkJoinTaskComparator<>(array, left, middle, limit, this.comparator, secuentialSorter);
-        ForkJoinTaskComparator<T> rightTask = new ForkJoinTaskComparator<>(array, middle+1, right, limit, this.comparator, secuentialSorter);
+        ForkJoinTaskComparator<T> leftTask = new ForkJoinTaskComparator<>(array, left, middle, limit, this.comparator);
+        ForkJoinTaskComparator<T> rightTask = new ForkJoinTaskComparator<>(array, middle+1, right, limit, this.comparator);
         leftTask.fork();
         rightTask.fork();
         leftTask.join();
         rightTask.join();
+        merge(middle);
+    }
+
+    private void sequentialMethod(int middle) {
+        ForkJoinTaskComparator<T> leftTask = new ForkJoinTaskComparator<>(array, left, middle, limit, this.comparator);
+        ForkJoinTaskComparator<T> rightTask = new ForkJoinTaskComparator<>(array, middle+1, right, limit, this.comparator);
+        leftTask.compute();
+        rightTask.compute();
         merge(middle);
     }
 

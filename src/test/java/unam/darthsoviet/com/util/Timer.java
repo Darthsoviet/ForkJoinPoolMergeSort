@@ -25,7 +25,7 @@ public class Timer {
             throw new RuntimeException("not start time");
 
         } else {
-            System.out.println(Thread.currentThread().getId() +" : "+ Duration.between(instant, Instant.now()).get(ChronoUnit.SECONDS));
+            System.out.println(Thread.currentThread().getId() +" : "+ Duration.between(instant, Instant.now()).get(ChronoUnit.SECONDS)+"s");
         }
     }
 }

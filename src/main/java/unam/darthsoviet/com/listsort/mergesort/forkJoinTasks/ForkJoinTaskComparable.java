@@ -1,10 +1,9 @@
 package unam.darthsoviet.com.listsort.mergesort.forkJoinTasks;
 
-import unam.darthsoviet.com.listsort.Sorter;
-import unam.darthsoviet.com.listsort.mergesort.MergeSort;
+
 import unam.darthsoviet.com.listsort.utils.ArraysUtils;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
 
@@ -14,37 +13,34 @@ public class ForkJoinTaskComparable<T extends Comparable<T>> extends RecursiveAc
     private final int right;
     private final int limit;
 
-    private final Sorter secuentialSorter;
 
-    public ForkJoinTaskComparable(List<T> array, int left, int right, int limit, Sorter secuentialSorter) {
+    public ForkJoinTaskComparable(List<T> array, int left, int right, int limit) {
         this.array = array;
         this.left = left;
         this.right = right;
         this.limit = limit;
-        this.secuentialSorter = secuentialSorter;
     }
 
-    public ForkJoinTaskComparable(List<T> array, int left, int right, int limit) {
-        this(array, left, right, limit, new MergeSort());
 
-    }
 
     @Override
     protected void compute() {
         int middle = (left + right) / 2;
-
-        if (left<right) {
+        int size = right - left;
+        if (size > limit) {
             forkJoinMethod(middle);
 
-            merge(middle);
+
+        } else if (right > left) {
+
+            sequentialMethod(middle);
 
         }
-
     }
 
     private void forkJoinMethod(int middle) {
-        ForkJoinTaskComparable<T> leftTask = new ForkJoinTaskComparable<>(array, left, middle, limit, secuentialSorter);
-        ForkJoinTaskComparable<T> rightTask = new ForkJoinTaskComparable<>(array, middle+1, right, limit, secuentialSorter);
+        ForkJoinTaskComparable<T> leftTask = new ForkJoinTaskComparable<>(array, left, middle, limit);
+        ForkJoinTaskComparable<T> rightTask = new ForkJoinTaskComparable<>(array, middle+1, right, limit);
         leftTask.fork();
         rightTask.fork();
         leftTask.join();
@@ -53,8 +49,8 @@ public class ForkJoinTaskComparable<T extends Comparable<T>> extends RecursiveAc
     }
 
     private void sequentialMethod(int middle) {
-        ForkJoinTaskComparable<T> leftTask = new ForkJoinTaskComparable<>(array, left, middle, limit, secuentialSorter);
-        ForkJoinTaskComparable<T> rightTask = new ForkJoinTaskComparable<>(array, middle, right, limit, secuentialSorter);
+        ForkJoinTaskComparable<T> leftTask = new ForkJoinTaskComparable<>(array, left, middle, limit);
+        ForkJoinTaskComparable<T> rightTask = new ForkJoinTaskComparable<>(array, middle+1, right, limit);
         leftTask.compute();
         rightTask.compute();
         merge(middle);
@@ -70,8 +66,8 @@ public class ForkJoinTaskComparable<T extends Comparable<T>> extends RecursiveAc
         int mergeAbsolutIndex = left;
 
 
-        List<T> leftList = ArraysUtils.getSubList(array, left, leftLimit);
-        List<T> rigthList = ArraysUtils.getSubList(array, middle + 1, rightLimit);
+        List<T> leftList = new ArrayList<>(ArraysUtils.getSubList(array, left, leftLimit));
+        List<T> rigthList = new ArrayList<>(ArraysUtils.getSubList(array, middle + 1, rightLimit));
 
 
         while (leftIndex < leftList.size() && rightIndex < rigthList.size()) {
