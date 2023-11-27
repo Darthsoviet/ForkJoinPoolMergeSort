@@ -27,7 +27,7 @@ public class ParallelMergeSort implements Sorter {
     }
 
     public ParallelMergeSort() {
-        this(100, new MergeSort());
+        this(1000, new MergeSort());
     }
 
 

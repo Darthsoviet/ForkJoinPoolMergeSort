@@ -84,7 +84,7 @@ public class MergeSortTest {
 
     @Test
     public void bigSort() {
-        Sorter parallel = new ParallelMergeSort();
+        Sorter parallel = new ParallelMergeSort(10_000);
         Sorter sequential = new MergeSort();
 
         timer.start();
