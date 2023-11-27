@@ -82,6 +82,7 @@ public class MergeSortTest {
     }
 
 
+    @Test
     public void bigSort() {
         Sorter parallel = new ParallelMergeSort();
         Sorter sequential = new MergeSort();
@@ -95,6 +96,8 @@ public class MergeSortTest {
         Assertions.assertEquals(numbers, numbers);
     }
 
+
+    @Test
 
     public void bigSort_comparator() {
         Sorter sequential = new MergeSort();
