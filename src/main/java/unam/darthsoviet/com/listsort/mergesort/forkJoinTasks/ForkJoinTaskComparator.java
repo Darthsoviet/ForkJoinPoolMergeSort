@@ -1,11 +1,9 @@
 package unam.darthsoviet.com.listsort.mergesort.forkJoinTasks;
 
-import unam.darthsoviet.com.listsort.Sorter;
-import unam.darthsoviet.com.listsort.mergesort.MergeSort;
+
 import unam.darthsoviet.com.listsort.utils.ArraysUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
@@ -18,7 +16,6 @@ public class ForkJoinTaskComparator<T> extends RecursiveAction {
     private final int right;
     private final int limit;
     private final Comparator<T> comparator;
-
 
 
     public ForkJoinTaskComparator(List<T> array, int left, int right, int limit, Comparator<T> comparator) {
@@ -35,9 +32,9 @@ public class ForkJoinTaskComparator<T> extends RecursiveAction {
         int middle = (left + right) / 2;
 
         int size = right - left;
-        if(size > limit){
+        if (size > limit) {
             forkJoinMethod(middle);
-        }else if (left<right) {
+        } else if (left < right) {
             sequentialMethod(middle);
 
         }
@@ -47,7 +44,7 @@ public class ForkJoinTaskComparator<T> extends RecursiveAction {
 
     private void forkJoinMethod(int middle) {
         ForkJoinTaskComparator<T> leftTask = new ForkJoinTaskComparator<>(array, left, middle, limit, this.comparator);
-        ForkJoinTaskComparator<T> rightTask = new ForkJoinTaskComparator<>(array, middle+1, right, limit, this.comparator);
+        ForkJoinTaskComparator<T> rightTask = new ForkJoinTaskComparator<>(array, middle + 1, right, limit, this.comparator);
         leftTask.fork();
         rightTask.fork();
         leftTask.join();
@@ -57,7 +54,7 @@ public class ForkJoinTaskComparator<T> extends RecursiveAction {
 
     private void sequentialMethod(int middle) {
         ForkJoinTaskComparator<T> leftTask = new ForkJoinTaskComparator<>(array, left, middle, limit, this.comparator);
-        ForkJoinTaskComparator<T> rightTask = new ForkJoinTaskComparator<>(array, middle+1, right, limit, this.comparator);
+        ForkJoinTaskComparator<T> rightTask = new ForkJoinTaskComparator<>(array, middle + 1, right, limit, this.comparator);
         leftTask.compute();
         rightTask.compute();
         merge(middle);
@@ -82,22 +79,22 @@ public class ForkJoinTaskComparator<T> extends RecursiveAction {
             T rightValue = rigthList.get(rightIndex);
 
             if (comparator.compare(leftValue, rightValue) <= 0) {
-                array.set(mergeAbsolutIndex,leftValue);
+                array.set(mergeAbsolutIndex, leftValue);
                 leftIndex++;
             } else {
-                array.set(mergeAbsolutIndex,rightValue);
+                array.set(mergeAbsolutIndex, rightValue);
                 rightIndex++;
             }
             mergeAbsolutIndex++;
 
         }
         while (rightIndex < rigthList.size()) {
-            array.set(mergeAbsolutIndex,rigthList.get(rightIndex));
+            array.set(mergeAbsolutIndex, rigthList.get(rightIndex));
             rightIndex++;
             mergeAbsolutIndex++;
         }
         while (leftIndex < leftList.size()) {
-            array.set(mergeAbsolutIndex,leftList.get(leftIndex));
+            array.set(mergeAbsolutIndex, leftList.get(leftIndex));
             leftIndex++;
             mergeAbsolutIndex++;
         }

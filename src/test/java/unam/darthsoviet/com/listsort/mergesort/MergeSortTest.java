@@ -16,7 +16,6 @@ import java.util.*;
 /**
  * Unit test for simple App.
  */
-@Execution(ExecutionMode.SAME_THREAD)
 public class MergeSortTest {
     static List<Integer> numbers;
 
@@ -76,14 +75,16 @@ public class MergeSortTest {
 
     @Test
     public void bigSort() {
-        Sorter parallel = new ParallelMergeSort(100);
+        Sorter parallel = new ParallelMergeSort(1_000);
         Sorter sequential = new MergeSort();
 
+        timer.start();
         timer.start();
         parallel.sort(numbers);
         timer.end();
         timer.start();
         sequential.sort(numbersExpectedUnordered);
+        timer.end();
         timer.end();
         Assertions.assertEquals(numbersExpectedUnordered, numbers);
     }

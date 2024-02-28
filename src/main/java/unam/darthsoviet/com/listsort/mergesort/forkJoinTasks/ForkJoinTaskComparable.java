@@ -3,7 +3,6 @@ package unam.darthsoviet.com.listsort.mergesort.forkJoinTasks;
 
 import unam.darthsoviet.com.listsort.utils.ArraysUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
 
@@ -22,17 +21,14 @@ public class ForkJoinTaskComparable<T extends Comparable<T>> extends RecursiveAc
     }
 
 
-
     @Override
     protected void compute() {
         int middle = (left + right) / 2;
+
         int size = right - left;
         if (size > limit) {
             forkJoinMethod(middle);
-
-
-        } else if (right > left) {
-
+        } else if (left < right) {
             sequentialMethod(middle);
 
         }
@@ -40,7 +36,7 @@ public class ForkJoinTaskComparable<T extends Comparable<T>> extends RecursiveAc
 
     private void forkJoinMethod(int middle) {
         ForkJoinTaskComparable<T> leftTask = new ForkJoinTaskComparable<>(array, left, middle, limit);
-        ForkJoinTaskComparable<T> rightTask = new ForkJoinTaskComparable<>(array, middle+1, right, limit);
+        ForkJoinTaskComparable<T> rightTask = new ForkJoinTaskComparable<>(array, middle + 1, right, limit);
         leftTask.fork();
         rightTask.fork();
         leftTask.join();
@@ -50,7 +46,7 @@ public class ForkJoinTaskComparable<T extends Comparable<T>> extends RecursiveAc
 
     private void sequentialMethod(int middle) {
         ForkJoinTaskComparable<T> leftTask = new ForkJoinTaskComparable<>(array, left, middle, limit);
-        ForkJoinTaskComparable<T> rightTask = new ForkJoinTaskComparable<>(array, middle+1, right, limit);
+        ForkJoinTaskComparable<T> rightTask = new ForkJoinTaskComparable<>(array, middle + 1, right, limit);
         leftTask.compute();
         rightTask.compute();
         merge(middle);
@@ -60,14 +56,14 @@ public class ForkJoinTaskComparable<T extends Comparable<T>> extends RecursiveAc
     private <t extends Comparable<T>> void merge(int middle) {
         int leftIndex = 0;
         int leftLimit = middle - left + 1;
+        int mergeAbsolutIndex = left;
 
         int rightIndex = 0;
         int rightLimit = right - middle;
-        int mergeAbsolutIndex = left;
 
 
-        List<T> leftList = new ArrayList<>(ArraysUtils.getSubList(array, left, leftLimit));
-        List<T> rigthList = new ArrayList<>(ArraysUtils.getSubList(array, middle + 1, rightLimit));
+        List<T> leftList = ArraysUtils.getSubList(array, left, leftLimit);
+        List<T> rigthList = ArraysUtils.getSubList(array, middle + 1, rightLimit);
 
 
         while (leftIndex < leftList.size() && rightIndex < rigthList.size()) {
